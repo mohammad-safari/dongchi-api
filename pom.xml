@@ -8,7 +8,7 @@
 		<version>3.2.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>ce.besab.dongchi</groupId>
+	<groupId>ce.bhesab.dongchi</groupId>
 	<artifactId>dongchi-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>dongchi-api</name>

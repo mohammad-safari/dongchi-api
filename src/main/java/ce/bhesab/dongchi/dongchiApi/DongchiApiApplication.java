@@ -1,4 +1,4 @@
-package ce.besab.dongchi.dongchiApi;
+package ce.bhesab.dongchi.dongchiApi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

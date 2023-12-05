@@ -1,4 +1,4 @@
-package ce.besab.dongchi.dongchiApi;
+package ce.bhesab.dongchi.dongchiApi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
