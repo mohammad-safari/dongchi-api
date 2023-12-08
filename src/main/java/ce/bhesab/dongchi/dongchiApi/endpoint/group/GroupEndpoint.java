@@ -46,7 +46,6 @@ public class GroupEndpoint {
     }
 
     @SneakyThrows
-    @Transactional
     @GetMapping
     public List<GroupModel> getGroups(Authentication authentication) {
         var username = authentication.getName();
