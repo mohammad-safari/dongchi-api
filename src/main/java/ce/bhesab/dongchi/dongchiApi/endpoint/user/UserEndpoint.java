@@ -21,14 +21,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-@RequiredArgsConstructor
-
 @RestController
 @RequestMapping("user")
+@RequiredArgsConstructor
 public class UserEndpoint {
 
-    final UserRepository userRepository;
-    final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("registration")
     public UserRegistrationResponse register(@Valid @RequestBody UserRegistrationRequest userRegistrationModel) {

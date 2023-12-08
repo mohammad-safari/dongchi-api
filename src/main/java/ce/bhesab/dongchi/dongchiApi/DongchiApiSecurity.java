@@ -33,6 +33,7 @@ public class DongchiApiSecurity {
         http.cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/resource**").hasRole("ADMIN")
                         .requestMatchers("/user/registration").permitAll()
                         .requestMatchers("/user/authentication").permitAll()
                         .anyRequest().authenticated())

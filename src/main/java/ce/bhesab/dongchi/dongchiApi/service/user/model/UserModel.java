@@ -1,11 +1,15 @@
 package ce.bhesab.dongchi.dongchiApi.service.user.model;
 
+import java.util.Set;
+
+import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupModel;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
@@ -40,4 +44,7 @@ public class UserModel {
     @Digits(fraction = 0, integer = 11)
     @Column(unique = true)
     String phone;
+
+    @ManyToMany(mappedBy = "members")
+    Set<GroupModel> groups;
 }
