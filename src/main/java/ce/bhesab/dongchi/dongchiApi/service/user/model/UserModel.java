@@ -1,5 +1,6 @@
 package ce.bhesab.dongchi.dongchiApi.service.user.model;
 
+import java.util.Objects;
 import java.util.Set;
 
 import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupModel;
@@ -44,6 +45,11 @@ public class UserModel {
     @Digits(fraction = 0, integer = 11)
     @Column(unique = true)
     String phone;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, email, password);
+    }
 
     @ManyToMany(mappedBy = "members")
     Set<GroupModel> groups;

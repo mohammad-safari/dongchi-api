@@ -1,5 +1,6 @@
 package ce.bhesab.dongchi.dongchiApi.service.group.model;
 
+import java.util.Objects;
 import java.util.Set;
 
 import ce.bhesab.dongchi.dongchiApi.service.user.model.UserModel;
@@ -37,6 +38,11 @@ public class GroupModel {
     @Nullable
     @Size(max = 66667)
     String groupImage;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, groupName, description);
+    }
 
     @NotEmpty
     @ManyToMany
