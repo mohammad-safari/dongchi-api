@@ -36,13 +36,8 @@ public class GroupModel {
     String description;
     /* estimated size of max 500KB */
     @Nullable
-    @Size(max = 66667)
+    @Size(max = 670000)
     String groupImage;
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, groupName, description);
-    }
 
     @NotEmpty
     @ManyToMany

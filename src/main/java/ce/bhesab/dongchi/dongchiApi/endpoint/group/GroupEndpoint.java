@@ -2,7 +2,6 @@ package ce.bhesab.dongchi.dongchiApi.endpoint.group;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupCreateRequest;
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupCreateResponse;
+import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupRetrievalModel;
+import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.MemberRetrievalModel;
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.exception.UsernameNotFoundException;
 import ce.bhesab.dongchi.dongchiApi.service.group.GroupRepository;
 import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupModel;
 import ce.bhesab.dongchi.dongchiApi.service.user.UserRepository;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -47,18 +47,30 @@ public class GroupEndpoint {
 
     @SneakyThrows
     @GetMapping
-    public List<GroupModel> getGroups(Authentication authentication) {
+    public List<GroupRetrievalModel> getGroups(Authentication authentication) {
         var username = authentication.getName();
         var retrievedUser = userRepository.findByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException());
         var groups = groupRepository.findByMembers(retrievedUser);
-        var filteredGroups = groups.stream().map(g -> {
-            var ownerOmitted = g.getMembers().stream().filter(u -> !u.getUsername().equals(authentication.getName()))
-                    .collect(Collectors.toSet());
-            g.setMembers(ownerOmitted);
-            return g;
-        }).toList();
-        return filteredGroups;
+        var test = convertEntityModelToRetrievalModel(username, groups);
+        return test;
+    }
+
+    private List<GroupRetrievalModel> convertEntityModelToRetrievalModel(String username, List<GroupModel> groups) {
+        return groups.stream().map(group -> GroupRetrievalModel.builder()
+                .id(group.getId())
+                .groupName(group.getGroupName())
+                .description(group.getDescription())
+                .groupImage(group.getGroupImage())
+                .otherMembers(group.getMembers().stream()
+                        // .filter(user -> !user.getUsername().equals(username))
+                        .map(user -> MemberRetrievalModel.builder()
+                                .username(user.getUsername())
+                                .email(user.getEmail())
+                                .phone(user.getPhone())
+                                .build())
+                        .toList())
+                .build()).toList();
     }
 
 }

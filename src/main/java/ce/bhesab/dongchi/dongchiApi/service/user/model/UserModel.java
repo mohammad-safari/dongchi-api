@@ -46,11 +46,6 @@ public class UserModel {
     @Column(unique = true)
     String phone;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, username, email, password);
-    }
-
     @ManyToMany(mappedBy = "members")
     Set<GroupModel> groups;
 }
