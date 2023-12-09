@@ -110,7 +110,6 @@ public class DongchiApiApplicationIntegrationTests {
 	}
 
 	@Test
-	@Disabled
 	@Transactional
 	public void testManyToManyRelationship() {
 		// Create a user
@@ -157,19 +156,18 @@ public class DongchiApiApplicationIntegrationTests {
 	@Transactional
 	public void testRetreiveUserGroups() throws Exception {
 		// Assuming there is a user in the database with the following details
-		// UserModel userModel = UserModel.builder()
-		// 		.username("username123")
-		// 		.email("email@domain.com")
-		// 		.password(passwordEncoder.encode("password123")).build();
-		// entityManager.persist(userModel);
-		// entityManager.persist(GroupModel.builder()
-		// 		.groupName("group123")
-		// 		.description("test group")
-		// 		.members(Set.of(userModel))
-		// 		.build());
-		// entityManager.flush();
-		// entityManager.clear();
-		testGroupCreation();
+		UserModel userModel = UserModel.builder()
+				.username("username123")
+				.email("email@domain.com")
+				.password(passwordEncoder.encode("password123")).build();
+		entityManager.persist(userModel);
+		entityManager.persist(GroupModel.builder()
+				.groupName("group123")
+				.description("test group")
+				.members(Set.of(userModel))
+				.build());
+		entityManager.flush();
+		entityManager.clear();
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/group")
 				.header("Authorization", "Basic " +

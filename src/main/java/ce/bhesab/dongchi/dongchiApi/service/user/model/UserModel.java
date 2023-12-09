@@ -19,6 +19,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -47,5 +48,6 @@ public class UserModel {
     String phone;
 
     @ManyToMany(mappedBy = "members")
+    @EqualsAndHashCode.Exclude
     Set<GroupModel> groups;
 }
