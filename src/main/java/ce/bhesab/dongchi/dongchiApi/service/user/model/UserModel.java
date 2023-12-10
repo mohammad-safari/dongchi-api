@@ -3,6 +3,7 @@ package ce.bhesab.dongchi.dongchiApi.service.user.model;
 import java.util.Objects;
 import java.util.Set;
 
+import ce.bhesab.dongchi.dongchiApi.service.event.model.EventModel;
 import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupModel;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
@@ -50,4 +51,8 @@ public class UserModel {
     @ManyToMany(mappedBy = "members")
     @EqualsAndHashCode.Exclude
     Set<GroupModel> groups;
+
+    @ManyToMany(mappedBy = "participants")
+    @EqualsAndHashCode.Exclude
+    Set<EventModel> events;
 }
