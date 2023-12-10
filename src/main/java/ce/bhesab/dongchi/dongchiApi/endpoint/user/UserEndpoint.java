@@ -1,18 +1,6 @@
 package ce.bhesab.dongchi.dongchiApi.endpoint.user;
 
-import java.util.Base64;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.AuthenticationPass;
-import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.UserAuthenticationRequest;
-import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.UserAuthenticationResponse;
-import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.UserRegistrationRequest;
-import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.UserRegistrationResponse;
+import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.*;
 import ce.bhesab.dongchi.dongchiApi.endpoint.user.exception.WrongEmailOrPasswordException;
 import ce.bhesab.dongchi.dongchiApi.service.user.UserRepository;
 import ce.bhesab.dongchi.dongchiApi.service.user.model.UserModel;
@@ -20,6 +8,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Base64;
 
 @RestController
 @RequestMapping("user")
@@ -60,4 +53,20 @@ public class UserEndpoint {
         throw new WrongEmailOrPasswordException();
     }
 
+    @SneakyThrows
+    @GetMapping("profile")
+    public UserProfileResponse getUserProfile(Authentication authentication) {
+        var retrievedUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
+        return UserProfileResponse.builder()
+                .username(retrievedUser.getUsername())
+                .email(retrievedUser.getEmail())
+                .phone(retrievedUser.getPhone())
+                .credit(UserBalanceResponse.builder()
+                        .currency("IRR")
+                        .amount(300000L).build())
+                .debt(UserBalanceResponse.builder()
+                        .currency("IRR")
+                        .amount(100000L).build())
+                .build();
+    }
 }
