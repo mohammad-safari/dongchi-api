@@ -2,6 +2,8 @@ package ce.bhesab.dongchi.dongchiApi.endpoint.group;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,11 +38,18 @@ public class GroupEndpoint {
             Authentication authentication) {
         var username = authentication.getName();
         var retrievedUser = userRepository.findByUsername(username).orElseThrow(
-                () -> new UsernameNotFoundException());
+                () -> new UsernameNotFoundException(username));
+        var otherRetrievedUser = groupCreateRequest.otherMembers().stream()
+                .map(otherUsername -> userRepository.findByUsername(otherUsername).orElse(null)).toList();
+        if (otherRetrievedUser.contains(null)) {
+            throw new UsernameNotFoundException();
+        }
         var group = GroupModel.builder().groupName(groupCreateRequest.groupName())
                 .description(groupCreateRequest.description())
                 .groupImage(groupCreateRequest.groupImage())
-                .members(Set.of(retrievedUser)).build();
+                .members(Stream.concat(Set.of(retrievedUser).stream(), otherRetrievedUser.stream())
+                        .collect(Collectors.toSet()))
+                .build();
         groupRepository.save(group);
         return new GroupCreateResponse();
     }

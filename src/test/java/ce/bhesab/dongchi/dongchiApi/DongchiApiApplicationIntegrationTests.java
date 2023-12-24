@@ -113,6 +113,41 @@ public class DongchiApiApplicationIntegrationTests {
 
 	@Test
 	@Transactional
+	public void testGroupCreationWithOtherMemebers() throws Exception {
+		// Assuming there is a user in the database with the following details
+		UserModel creatorUser = UserModel.builder()
+				.username("username123")
+				.email("email@domain.com")
+				.password(passwordEncoder.encode("password123")).build();
+		entityManager.persist(creatorUser);
+		UserModel otherUser = UserModel.builder()
+				.username("username1234")
+				.email("email2@domain.com")
+				.password(passwordEncoder.encode("password1234")).build();
+		entityManager.persist(otherUser);
+		entityManager.flush();
+		entityManager.clear();
+
+		var creationRequest = """
+					{"groupName":"group123", "description":"test group", "otherMembers":["username1234"]}
+				""";
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/group")
+				.header("Authorization", "Basic " +
+						Base64.getEncoder().encodeToString("username123:password123".getBytes()))
+				.content(creationRequest)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		entityManager.contains(GroupModel.builder()
+				.groupName("group123")
+				.description("test group")
+				.members(Set.of(creatorUser, otherUser))
+				.build());
+	}
+
+	@Test
+	@Transactional
 	public void testManyToManyRelationship() {
 		// Create a user
 		UserModel user = UserModel.builder()
