@@ -1,4 +1,4 @@
-package ce.bhesab.dongchi.dongchiApi.endpoint.group.exception;
+package ce.bhesab.dongchi.dongchiApi.service.group.exception;
 
 import lombok.NoArgsConstructor;
 
