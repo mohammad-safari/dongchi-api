@@ -1,4 +1,4 @@
-package ce.bhesab.dongchi.dongchiApi.service.group;
+package ce.bhesab.dongchi.dongchiApi.service.group.repository;
 
 import java.util.List;
 

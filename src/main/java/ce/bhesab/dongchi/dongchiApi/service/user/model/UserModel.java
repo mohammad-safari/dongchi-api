@@ -1,6 +1,5 @@
 package ce.bhesab.dongchi.dongchiApi.service.user.model;
 
-import java.util.Objects;
 import java.util.Set;
 
 import ce.bhesab.dongchi.dongchiApi.service.event.model.EventModel;

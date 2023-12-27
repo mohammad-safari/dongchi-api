@@ -1,7 +1,12 @@
 package ce.bhesab.dongchi.dongchiApi.service.group.model;
 
-import java.util.Objects;
+import java.io.Serializable;
 import java.util.Set;
+
+import org.apache.commons.lang3.builder.HashCodeExclude;
+import org.apache.commons.lang3.builder.ToStringExclude;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ce.bhesab.dongchi.dongchiApi.service.user.model.UserModel;
 import jakarta.annotation.Nullable;
@@ -10,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -17,7 +23,9 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode.Exclude;
 
 @Data
 @Entity
@@ -42,4 +50,8 @@ public class GroupModel {
     @NotEmpty
     @ManyToMany
     Set<UserModel> members;
+
+    @OneToMany(mappedBy = "group") 
+    @EqualsAndHashCode.Exclude
+    Set<GroupJoinCode> codes;
 }

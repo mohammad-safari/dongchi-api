@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,9 +45,15 @@ public class GroupEndpoint {
         return test;
     }
 
+    @SneakyThrows
+    @GetMapping("{groupId}/join-code")
+    public String getJoinCode(Authentication authentication, @PathVariable Long groupId) {
+        return groupService.generateJoinCodeAsUser(authentication.getName(), groupId);
+    }
+
     private List<GroupRetrievalModel> convertEntityModelToRetrievalModel(String username, List<GroupModel> groups) {
         return groups.stream().map(group -> GroupRetrievalModel.builder()
-                .id(group.getId())
+                .id(group.getId()) 
                 .groupName(group.getGroupName())
                 .description(group.getDescription())
                 .groupImage(group.getGroupImage())
