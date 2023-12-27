@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupCreateRequest;
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupCreateResponse;
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupRetrievalModel;
+import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.JoinGroupResponse;
+import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.JoinGroupResuest;
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.MemberRetrievalModel;
 import ce.bhesab.dongchi.dongchiApi.service.group.GroupService;
 import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupModel;
@@ -53,7 +55,7 @@ public class GroupEndpoint {
 
     private List<GroupRetrievalModel> convertEntityModelToRetrievalModel(String username, List<GroupModel> groups) {
         return groups.stream().map(group -> GroupRetrievalModel.builder()
-                .id(group.getId()) 
+                .id(group.getId())
                 .groupName(group.getGroupName())
                 .description(group.getDescription())
                 .groupImage(group.getGroupImage())
@@ -66,6 +68,14 @@ public class GroupEndpoint {
                                 .build())
                         .toList())
                 .build()).toList();
+    }
+
+    @SneakyThrows
+    @PostMapping("join-code")
+    public JoinGroupResponse joinGroupViaJoinCode(Authentication authentication,
+            @Valid @RequestBody JoinGroupResuest joinRequest) {
+        groupService.addUserViaCode(authentication.getName(), joinRequest.code());
+        return new JoinGroupResponse();
     }
 
 }

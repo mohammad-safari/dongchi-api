@@ -1,12 +1,6 @@
 package ce.bhesab.dongchi.dongchiApi.service.group.model;
 
-import java.io.Serializable;
 import java.util.Set;
-
-import org.apache.commons.lang3.builder.HashCodeExclude;
-import org.apache.commons.lang3.builder.ToStringExclude;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ce.bhesab.dongchi.dongchiApi.service.user.model.UserModel;
 import jakarta.annotation.Nullable;
@@ -25,7 +19,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.EqualsAndHashCode.Exclude;
 
 @Data
 @Entity

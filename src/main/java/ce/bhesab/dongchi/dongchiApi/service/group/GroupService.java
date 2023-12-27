@@ -17,12 +17,14 @@ import org.springframework.stereotype.Service;
 
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupCreateRequest;
 import ce.bhesab.dongchi.dongchiApi.service.group.exception.GroupNotFoundException;
+import ce.bhesab.dongchi.dongchiApi.service.group.exception.InvalidGroupJoinCode;
 import ce.bhesab.dongchi.dongchiApi.service.group.exception.UsernameNotFoundException;
 import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupJoinCode;
 import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupModel;
 import ce.bhesab.dongchi.dongchiApi.service.group.repository.GroupJoinCodeRepository;
 import ce.bhesab.dongchi.dongchiApi.service.group.repository.GroupRepository;
 import ce.bhesab.dongchi.dongchiApi.service.user.UserRepository;
+import ce.bhesab.dongchi.dongchiApi.service.user.model.UserModel;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -105,6 +107,14 @@ public class GroupService {
         return new StringBuilder().append(adjectivesCopy.get(rand.nextInt(adjectivesCopy.size())))
                 .append("-").append(nounsCopy.get(rand.nextInt(nounsCopy.size())))
                 .append("-").append(rand.nextInt()).toString();
+    }
+
+    @Transactional
+    public void addUserViaCode(String name, String code) throws InvalidGroupJoinCode, UsernameNotFoundException {
+        var user = userRepository.findByUsername(name).orElseThrow(UsernameNotFoundException::new);
+        var groupJoinCode = groupJoinCodeRepository.findByCode(code).orElseThrow(InvalidGroupJoinCode::new);
+        var group = groupJoinCode.getGroup();
+        group.setMembers(Stream.concat(group.getMembers().stream(), Set.of(user).stream()).collect(Collectors.toSet()));
     }
 
 }
