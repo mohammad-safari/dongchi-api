@@ -36,8 +36,7 @@ public class UserEndpoint {
     @SneakyThrows
     @PostMapping("authentication")
     public UserAuthenticationResponse authenticate(
-            @Valid @RequestBody UserAuthenticationRequest userAuthenticationRequest,
-            HttpServletResponse response) {
+            @Valid @RequestBody UserAuthenticationRequest userAuthenticationRequest, HttpServletResponse response) {
         if (userAuthenticationRequest.pass() == AuthenticationPass.USERNAME) {
             var authorizationHeader = userService.authenticateUsingPassword(
                     userAuthenticationRequest.username(), userAuthenticationRequest.password());

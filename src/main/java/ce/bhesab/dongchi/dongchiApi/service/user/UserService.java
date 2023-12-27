@@ -30,7 +30,7 @@ public class UserService {
 
     public String authenticateUsingPassword(String username, String password) throws WrongEmailOrPasswordException {
         var retrievedUser = userRepository.findByUsername(username).orElse(null);
-        if (retrievedUser == null || passwordEncoder.matches(password, retrievedUser.getPassword())) {
+        if (retrievedUser == null || !passwordEncoder.matches(password, retrievedUser.getPassword())) {
             throw new WrongEmailOrPasswordException();
         }
         var authorizationHeader = "Basic "

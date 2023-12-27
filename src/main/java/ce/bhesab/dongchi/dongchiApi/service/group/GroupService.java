@@ -1,6 +1,7 @@
 package ce.bhesab.dongchi.dongchiApi.service.group;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,10 +20,10 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
 
-    public void createGroupIncludingRequestingUser(GroupCreateRequest groupCreateRequest, String username) throws UsernameNotFoundException {
-        var retrievedUser = userRepository.findByUsername(username).orElseThrow(
-                () -> new UsernameNotFoundException(username));
-        var otherRetrievedUser = groupCreateRequest.otherMembers().stream()
+    public void createGroupIncludingRequestingUser(GroupCreateRequest groupCreateRequest, String username)
+            throws UsernameNotFoundException {
+        var retrievedUser = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        var otherRetrievedUser = Optional.ofNullable(groupCreateRequest.otherMembers()).orElseGet(Set::of).stream()
                 .map(otherUsername -> userRepository.findByUsername(otherUsername).orElse(null)).toList();
         if (otherRetrievedUser.contains(null)) {
             throw new UsernameNotFoundException();
@@ -41,6 +42,6 @@ public class GroupService {
                 () -> new UsernameNotFoundException());
         var groups = groupRepository.findByMembers(retrievedUser);
         return groups;
-}
+    }
 
 }
