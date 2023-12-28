@@ -20,11 +20,11 @@ import ce.bhesab.dongchi.dongchiApi.service.group.exception.GroupNotFoundExcepti
 import ce.bhesab.dongchi.dongchiApi.service.group.exception.InvalidGroupJoinCode;
 import ce.bhesab.dongchi.dongchiApi.service.group.exception.UsernameNotFoundException;
 import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupJoinCode;
+import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupJoinCodeId;
 import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupModel;
 import ce.bhesab.dongchi.dongchiApi.service.group.repository.GroupJoinCodeRepository;
 import ce.bhesab.dongchi.dongchiApi.service.group.repository.GroupRepository;
 import ce.bhesab.dongchi.dongchiApi.service.user.UserRepository;
-import ce.bhesab.dongchi.dongchiApi.service.user.model.UserModel;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
