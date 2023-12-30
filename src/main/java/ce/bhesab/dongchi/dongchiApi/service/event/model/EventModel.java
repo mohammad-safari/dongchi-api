@@ -1,5 +1,6 @@
 package ce.bhesab.dongchi.dongchiApi.service.event.model;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import ce.bhesab.dongchi.dongchiApi.service.group.model.GroupModel;
@@ -34,7 +35,7 @@ public class EventModel {
     @NotNull
     @Builder.Default
     EventType type = EventType.Expense;
-    Long totalAmount;
+    BigDecimal totalAmount;
     @Nullable
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "eventModel")
     Set<BalanceModel> amountPerUser;

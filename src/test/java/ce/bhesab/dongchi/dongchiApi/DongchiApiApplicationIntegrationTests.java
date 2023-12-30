@@ -215,4 +215,6 @@ public class DongchiApiApplicationIntegrationTests {
 				.andReturn();
 	}
 
+	// TODO test cases for group join and join code endpoints
+
 }
