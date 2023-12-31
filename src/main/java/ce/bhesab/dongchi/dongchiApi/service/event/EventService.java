@@ -38,21 +38,24 @@ public class EventService {
         if (participants.contains(null)) {
             throw new UsernameNotFoundException();
         }
-        var balanceModelList = addAllGroupBalances(participantsUserNameShareMap, creditor, participants);
         var eventModel = EventModel.builder().groupScope(relatedGroup).totalAmount(totalAmount)
-                .participants(Set.copyOf(participants)).amountPerUser(Set.copyOf(balanceModelList)).type(type).build();
+                .participants(Set.copyOf(participants)).type(type).build();
+        var balanceModelList = addAllGroupBalances(participantsUserNameShareMap, creditor, participants, eventModel);
+        eventModel.setAmountPerUser(Set.copyOf(balanceModelList));
         eventRepository.save(eventModel);
     }
 
     private List<BalanceModel> addAllGroupBalances(Map<String, BigDecimal> participantsUserNameShareMap,
-            UserModel creditor, List<UserModel> participants) {
-        var balanceModelList = participantsUserNameShareMap.entrySet().stream().map(entry -> {
-            var debtorUsername = entry.getKey();
-            var debtorUser = participants.stream().filter(p -> p.getUsername().equals(debtorUsername)).findAny()
-                    .orElse(null);
-            return BalanceModel.builder().creditor(creditor).debtor(debtorUser)
-                    .amount(participantsUserNameShareMap.get(debtorUsername)).build();
-        }).toList();
+            UserModel creditor, List<UserModel> participants, EventModel eventModel) {
+        var balanceModelList = participantsUserNameShareMap.entrySet().stream()
+                .filter(entry -> !entry.getKey().equals(creditor.getUsername()))
+                .map(entry -> {
+                    var debtorUsername = entry.getKey();
+                    var debtorUser = participants.stream().filter(p -> p.getUsername().equals(debtorUsername)).findAny()
+                            .orElse(null);
+                    return BalanceModel.builder().creditor(creditor).debtor(debtorUser).eventModel(eventModel)
+                            .amount(participantsUserNameShareMap.get(debtorUsername)).build();
+                }).toList();
         balanceRepository.saveAll(balanceModelList);
         return balanceModelList;
     }
