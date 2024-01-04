@@ -12,6 +12,7 @@ import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.UserAuthenticationRequest;
 import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.UserAuthenticationResponse;
 import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.UserProfileResponse;
 import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.UserRegistrationRequest;
+import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.UserRegistrationWithoutUsernameRequest;
 import ce.bhesab.dongchi.dongchiApi.endpoint.user.dto.UserRegistrationResponse;
 import ce.bhesab.dongchi.dongchiApi.endpoint.user.exception.IllegalAuthenticationPassException;
 import ce.bhesab.dongchi.dongchiApi.service.user.UserService;
@@ -30,7 +31,13 @@ public class UserEndpoint {
     @PostMapping("registration")
     public UserRegistrationResponse register(@Valid @RequestBody UserRegistrationRequest userRegistrationModel) {
         userService.registerUser(userRegistrationModel);
-        return new UserRegistrationResponse();
+        return new UserRegistrationResponse(userRegistrationModel.username());
+    }
+    
+    @PostMapping("registration/quick")
+    public UserRegistrationResponse registerWithoutUsername(@Valid @RequestBody UserRegistrationWithoutUsernameRequest userRegistrationModel) {
+        var username = userService.registerUserWithoutUsername(userRegistrationModel);
+        return new UserRegistrationResponse(username);
     }
 
     @SneakyThrows

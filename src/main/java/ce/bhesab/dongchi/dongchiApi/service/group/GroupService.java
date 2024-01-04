@@ -27,6 +27,7 @@ import ce.bhesab.dongchi.dongchiApi.service.group.repository.GroupRepository;
 import ce.bhesab.dongchi.dongchiApi.service.user.UserRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -34,8 +35,8 @@ import lombok.SneakyThrows;
 @RequiredArgsConstructor
 public class GroupService {
 
-    private static final String ADJECTIVE_KEY = "ADJECTIVES";
-    private static final String NOUN_KEY = "NOUNS";
+    public static final String ADJECTIVE_KEY = "ADJECTIVES";
+    public static final String NOUN_KEY = "NOUNS";
     private static final String ADJECTIVES_FILENAME = "adjective.txt";
     private static final String NOUNS_FILENAME = "noun.txt";
 
@@ -43,6 +44,7 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
 
+    @Getter
     private Map<String, List<String>> dictionary; // ENUM MAP
 
     @SneakyThrows
@@ -98,7 +100,7 @@ public class GroupService {
         return code;
     }
 
-    private String generateRandomStringByAdjectiveNoun(List<String> nouns, List<String> adjectives) {
+    public String generateRandomStringByAdjectiveNoun(List<String> nouns, List<String> adjectives) {
         var rand = new Random();
         var nounsCopy = new ArrayList<>(nouns);
         var adjectivesCopy = new ArrayList<>(adjectives);
