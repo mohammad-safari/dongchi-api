@@ -2,9 +2,11 @@ package ce.bhesab.dongchi.dongchiApi.service.event;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
@@ -73,26 +75,32 @@ public class EventService {
     @Cacheable(value = "optimizedBalance", key = "#group.id")
     public Map<String, Map<String, BigDecimal>> optimizeGroupBalance(Long groupId) throws GroupNotFoundException {
         var netBalanceMap = calculateNetBalance(groupId);
-        var debtsMap = new HashMap<String, Map<String, BigDecimal>>();
+        var optimizedMap = new HashMap<String, Map<String, BigDecimal>>();
 
-        for (var creditor : netBalanceMap.keySet()) {
-            debtsMap.put(creditor, new HashMap<>());
-            
-            for (var debtor : netBalanceMap.keySet()) {
+        Comparator<Entry<String, BigDecimal>> descendingComparator = (bal1, bal2) -> bal2.getValue().abs()
+                .compareTo(bal1.getValue().abs());
+        var descendingSortedNameList = netBalanceMap.entrySet().stream().sorted(descendingComparator)
+                .map(Map.Entry::getKey)
+                .toList();
+
+        for (var creditor : descendingSortedNameList) {
+            optimizedMap.put(creditor, new HashMap<>());
+
+            for (var debtor : descendingSortedNameList) {
                 var creditorBalance = netBalanceMap.get(creditor);
                 var debtorBalance = netBalanceMap.get(debtor);
 
                 if (!creditor.equals(debtor) && creditorBalance.compareTo(BigDecimal.ZERO) > 0
                         && debtorBalance.compareTo(BigDecimal.ZERO) < 0) {
                     var minTransaction = creditorBalance.min(debtorBalance.abs());
-                    debtsMap.get(creditor).put(debtor, minTransaction);
+                    optimizedMap.get(creditor).put(debtor, minTransaction);
                     // update net balance
                     netBalanceMap.get(creditor).subtract(minTransaction);
                     netBalanceMap.get(debtor).add(minTransaction);
                 }
             }
         }
-        return debtsMap;
+        return optimizedMap;
     }
 
     @Cacheable(value = "netBalance", key = "#group.id")
