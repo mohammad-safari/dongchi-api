@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.EventPostRequest;
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.EventPostResponse;
+import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupBalanceRetrievalModel;
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupCreateRequest;
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupCreateResponse;
 import ce.bhesab.dongchi.dongchiApi.endpoint.group.dto.GroupEventRetrievalModel;
@@ -89,7 +90,7 @@ public class GroupEndpoint {
     @GetMapping("{groupId}/events")
     public List<GroupEventRetrievalModel> retrieveGroupEvents(Authentication authentication,
             @PathVariable Long groupId) {
-        // todo pagination and access check
+        // TODO pagination and access check
         var events = eventService.getAllGroupEvents(groupId);
         return events.stream().map(e -> GroupEventRetrievalModel.builder()
                 .creditorUsername(e.getAmountPerUser().iterator().next().getCreditor().getUsername())
@@ -105,9 +106,18 @@ public class GroupEndpoint {
     @PostMapping("{groupId}/event")
     public EventPostResponse postGroupEvent(Authentication authentication,
             @PathVariable Long groupId, @RequestBody EventPostRequest request) {
+        // TODO pagination and access check
         eventService.addGroupEvent(groupId, request.creditorUsername(), request.totalAmount(),
                 request.getEventType(), request.participantsUserNameShareMap());
         return new EventPostResponse();
+    }
+
+    @SneakyThrows
+    @GetMapping("{groupId}/balances")
+    public GroupBalanceRetrievalModel retrieveGroupBalances(Authentication authentication,
+            @PathVariable Long groupId) {
+        // TODO pagination and access check
+        return new GroupBalanceRetrievalModel(eventService.optimizeGroupBalance(groupId));
     }
 
 }

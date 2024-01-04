@@ -1,11 +1,15 @@
 package ce.bhesab.dongchi.dongchiApi.service.event;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import ce.bhesab.dongchi.dongchiApi.service.event.model.BalanceModel;
@@ -28,6 +32,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final BalanceRepository balanceRepository;
 
+    @CacheEvict(value = "debts", key = "#group.id")
     public void addGroupEvent(Long groupId, String creditorUsername, BigDecimal totalAmount,
             EventType type, Map<String, BigDecimal> participantsUserNameShareMap)
             throws GroupNotFoundException, UsernameNotFoundException {
@@ -63,6 +68,64 @@ public class EventService {
     public List<EventModel> getAllGroupEvents(Long groupId) throws GroupNotFoundException {
         var relatedGroup = groupRepository.findById(groupId).orElseThrow(GroupNotFoundException::new);
         return eventRepository.findByGroupScope(relatedGroup);
+    }
+
+    @Cacheable(value = "optimizedBalance", key = "#group.id")
+    public Map<String, Map<String, BigDecimal>> optimizeGroupBalance(Long groupId) throws GroupNotFoundException {
+        var netBalanceMap = calculateNetBalance(groupId);
+        var debtsMap = new HashMap<String, Map<String, BigDecimal>>();
+
+        for (var creditor : netBalanceMap.keySet()) {
+            debtsMap.put(creditor, new HashMap<>());
+            
+            for (var debtor : netBalanceMap.keySet()) {
+                var creditorBalance = netBalanceMap.get(creditor);
+                var debtorBalance = netBalanceMap.get(debtor);
+
+                if (!creditor.equals(debtor) && creditorBalance.compareTo(BigDecimal.ZERO) > 0
+                        && debtorBalance.compareTo(BigDecimal.ZERO) < 0) {
+                    var minTransaction = creditorBalance.min(debtorBalance.abs());
+                    debtsMap.get(creditor).put(debtor, minTransaction);
+                    // update net balance
+                    netBalanceMap.get(creditor).subtract(minTransaction);
+                    netBalanceMap.get(debtor).add(minTransaction);
+                }
+            }
+        }
+        return debtsMap;
+    }
+
+    @Cacheable(value = "netBalance", key = "#group.id")
+    public Map<String, BigDecimal> calculateNetBalance(Long groupId) throws GroupNotFoundException {
+        var netBalanceMap = new HashMap<String, BigDecimal>();
+        var events = getAllGroupEvents(groupId);
+        for (EventModel event : events) {
+            var participants = event.getParticipants();
+            var totalAmount = event.getTotalAmount();
+            var balances = event.getAmountPerUser();
+
+            // Calculate individual contribution for each participant
+            var individualContribution = totalAmount.divide(BigDecimal.valueOf(participants.size()), 2,
+                    RoundingMode.HALF_UP);
+
+            // Update net balances based on contributions
+            for (var participant : participants) {
+                var contribution = balances.stream()
+                        .filter(balance -> balance.getCreditor().equals(participant))
+                        .map(BalanceModel::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                contribution = contribution.subtract(balances.stream()
+                        .filter(balance -> balance.getDebtor().equals(participant))
+                        .map(BalanceModel::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add));
+
+                netBalanceMap.put(participant.getUsername(),
+                        netBalanceMap.getOrDefault(participant, BigDecimal.ZERO).add(contribution));
+            }
+        }
+
+        return netBalanceMap;
     }
 
 }
