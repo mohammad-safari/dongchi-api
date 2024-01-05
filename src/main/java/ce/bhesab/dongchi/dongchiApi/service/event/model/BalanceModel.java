@@ -6,13 +6,16 @@ import ce.bhesab.dongchi.dongchiApi.service.user.model.UserModel;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "BALANCES")
 public class BalanceModel {
     @Id
@@ -22,7 +25,7 @@ public class BalanceModel {
     @Nonnull
     @ManyToOne
     private UserModel creditor;
-    
+
     @Nonnull
     @ManyToOne
     private UserModel debtor;
@@ -32,6 +35,7 @@ public class BalanceModel {
 
     @Nonnull
     @ManyToOne
+    @EqualsAndHashCode.Exclude
     private EventModel eventModel;
 
 }

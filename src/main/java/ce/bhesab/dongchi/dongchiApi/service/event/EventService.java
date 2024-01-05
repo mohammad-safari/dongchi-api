@@ -25,6 +25,7 @@ import ce.bhesab.dongchi.dongchiApi.service.group.repository.GroupRepository;
 import ce.bhesab.dongchi.dongchiApi.service.user.UserRepository;
 import ce.bhesab.dongchi.dongchiApi.service.user.model.UserModel;
 import lombok.RequiredArgsConstructor;
+import jakarta.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,7 @@ public class EventService {
     private final BalanceRepository balanceRepository;
 
     @CacheEvict(value = "debts", key = "#group.id")
+    @Transactional
     public void addGroupEvent(Long groupId, String creditorUsername, BigDecimal totalAmount,
             EventType type, Map<String, BigDecimal> participantsUserNameShareMap)
             throws GroupNotFoundException, UsernameNotFoundException {
@@ -52,6 +54,7 @@ public class EventService {
         eventRepository.save(eventModel);
     }
 
+    @Transactional
     private List<BalanceModel> addAllGroupBalances(Map<String, BigDecimal> participantsUserNameShareMap,
             UserModel creditor, List<UserModel> participants, EventModel eventModel) {
         var balanceModelList = participantsUserNameShareMap.entrySet().stream()
@@ -63,8 +66,7 @@ public class EventService {
                     return BalanceModel.builder().creditor(creditor).debtor(debtorUser).eventModel(eventModel)
                             .amount(participantsUserNameShareMap.get(debtorUsername)).build();
                 }).toList();
-        balanceRepository.saveAll(balanceModelList);
-        return balanceModelList;
+        return balanceRepository.saveAll(balanceModelList);
     }
 
     public List<EventModel> getAllGroupEvents(Long groupId) throws GroupNotFoundException {
